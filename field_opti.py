@@ -251,7 +251,9 @@ with row2_col1:
                 beamwidth_v_deg = beamwidth_v_deg,
                 beamwidth_h_deg = beamwidth_h_deg
                 )
-            st.write(params)
+            display_params = params.copy()
+            display_params["best_tilt_deg"] = -display_params["best_tilt_deg"]
+            st.write(display_params)
             st.pyplot(fig_2d)
             st.pyplot(fig_3d)
 
