@@ -1,9 +1,8 @@
 import streamlit as st
-import pnadas as pd
+import pandas as pd
 from haversine import haversine
 import folium as g
-import numbpy as np
-import folium
+import numpy as np
 import random
 import matplotlib.pyplot as plt
 import math
