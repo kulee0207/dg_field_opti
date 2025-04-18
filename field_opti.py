@@ -108,7 +108,7 @@ def compute_coverage_with_horizontal(H_s, H_r, D, beamwidth_v_deg, beamwidth_h_d
     if show_plot:
         plt.figure(figsize=(10, 5))
         plt.plot(-tilt_range, coverages)
-        plt.axvline(-best_data["best_tilt_deg"], color='red', linestyle='--', label=f"Best Tilt = {-best_data['best_tilt_deg']:.0f}°")
+        plt.axvline(best_data["best_tilt_deg"], color='red', linestyle='--', label=f"Best Tilt = {-best_data['best_tilt_deg']:.0f}°")
         plt.axhline(best_data["max_v_coverage"], color='blue', linestyle='--', label=f"Max Verticla_Coverage = {best_data['max_v_coverage']:.2f}°")
         plt.title("Tilt Angle vs. Vertical Coverage Length")
         plt.xlabel("Tilt Angle (°)")
@@ -121,9 +121,9 @@ def compute_coverage_with_horizontal(H_s, H_r, D, beamwidth_v_deg, beamwidth_h_d
         plt.show()
         fig = plt.gcf()
         plt.close()
-        # half_h_rad = np.radians(beamwidth_h_deg / 2)
-        # horizontal_coverage = 2 * D * np.tan(half_h_rad)
-        # best_data["horizontal_coverage_m"] = round(horizontal_coverage,2)
+        half_h_rad = np.radians(beamwidth_h_deg / 2)
+        horizontal_coverage = 2 * D * np.tan(half_h_rad)
+        best_data["horizontal_coverage_m"] = round(horizontal_coverage,2)
         return best_data, fig
 
     # 수평 커버리지 계산
