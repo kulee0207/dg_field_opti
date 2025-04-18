@@ -257,17 +257,3 @@ with row2_col2:
             st.write(f"메인 빔이 커버할 수 있는 좌우 범위 : {horizon_cov_range:.2f}m")
 
 
-
-
-
-
-
-
-
-# def main():
-#     st.title('Hello')
-
-
-# if __name__=='__main__':
-#     main()
-
