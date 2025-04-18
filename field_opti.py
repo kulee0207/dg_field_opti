@@ -113,7 +113,7 @@ def compute_coverage_with_horizontal(H_s, H_r, D, beamwidth_v_deg, beamwidth_h_d
         plt.figure(figsize=(10, 5))
         plt.plot(-tilt_range, coverages)
         plt.axvline(-best_data["best_tilt_deg"], color='red', linestyle='--', label=f"Best Tilt = {-best_data['best_tilt_deg']:.0f}°")
-        plt.axhline(best_data["max_vertical_coverage"], color='blue', linestyle='--', label=f"Max Verticla_Coverage = {best_data['max_coverage']:.2f}°")
+        plt.axhline(best_data["max_vertical_coverage"], color='blue', linestyle='--', label=f"Max Verticla_Coverage = {best_data['max_vertical_coverage']:.2f}°")
         plt.title("Tilt Angle vs. Vertical Coverage Length")
         plt.xlabel("Tilt Angle (°)")
         plt.ylabel("Vertical Coverage (m)")
