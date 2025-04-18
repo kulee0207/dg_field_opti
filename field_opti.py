@@ -121,6 +121,9 @@ def compute_coverage_with_horizontal(H_s, H_r, D, beamwidth_v_deg, beamwidth_h_d
         plt.legend()
         plt.tight_layout()
         plt.show()
+        fig = plt.gcf()
+        plt.close()
+        return best_data, fig
  
     # 수평 커버리지 계산
     half_h_rad = np.radians(beamwidth_h_deg / 2)
@@ -184,6 +187,9 @@ def plot_3d_beam_coverage_with_volume(H_s, H_r, D, tilt_deg, beamwidth_v_deg, be
     ax.legend()
     plt.tight_layout()
     plt.show()
+    fig = plt.gcf()
+    plt.close()
+    return fig
  
 # 실행 예시
 # params = compute_coverage_with_horizontal(
@@ -228,7 +234,7 @@ with row2_col1:
         beamwidth_v_deg = st.number_input("수직 빔폭(도) ", key='unique_key_304')
         beamwidth_h_deg = st.number_input("수평 빔폭(도) ", key='unique_key_305')
         if st.button("최적 Tilt 반환", key="unique_key_3"):
-            params = compute_coverage_with_horizontal(
+            params, fig_2d = compute_coverage_with_horizontal(
                 H_s = base_station_height,
                 H_r = target_bld_height,
                 D = distance,
@@ -236,7 +242,7 @@ with row2_col1:
                 beamwidth_h_deg = beamwidth_h_deg,
                 show_plot=True
                 )
-            plot_3d_beam_coverage_with_volume(
+            fig_3d = plot_3d_beam_coverage_with_volume(
                 H_s = base_station_height,
                 H_r = target_bld_height,
                 D = distance,
@@ -245,6 +251,8 @@ with row2_col1:
                 beamwidth_h_deg = beamwidth_h_deg
                 )
             st.write(params)
+            st.pyplot(fig_2d)
+            st.pyplot(fig_3d)
 
 with row2_col2:
     with st.expander("틸트 및 커버리지 계산"):
