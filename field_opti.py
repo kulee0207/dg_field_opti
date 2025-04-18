@@ -102,10 +102,10 @@ def compute_coverage_with_horizontal(H_s, H_r, D, beamwidth_v_deg, beamwidth_h_d
                 "coverage_bottom_m" : round(y_min,2),
                 "main_beam_height" : round(H_s +np.tan(center_rad)*D,2),
             }
-    # 수평 커버리지 계산
-    half_h_rad = np.radians(beamwidth_h_deg / 2)
-    horizontal_coverage = 2 * D * np.tan(half_h_rad)
-    best_data["horizontal_coverage_m"] = round(horizontal_coverage,2)
+    # # 수평 커버리지 계산
+    # half_h_rad = np.radians(beamwidth_h_deg / 2)
+    # horizontal_coverage = 2 * D * np.tan(half_h_rad)
+    # best_data["horizontal_coverage_m"] = round(horizontal_coverage,2)
     coverages = np.array(coverages)
     valid_idx = coverages > 0
     tilt_range_valid = tilt_range[valid_idx]
@@ -128,9 +128,9 @@ def compute_coverage_with_horizontal(H_s, H_r, D, beamwidth_v_deg, beamwidth_h_d
         return best_data, fig
 
     # 수평 커버리지 계산
-    # half_h_rad = np.radians(beamwidth_h_deg / 2)
-    # horizontal_coverage = 2 * D * np.tan(half_h_rad)
-    # best_data["horizontal_coverage_m"] = round(horizontal_coverage,2)
+    half_h_rad = np.radians(beamwidth_h_deg / 2)
+    horizontal_coverage = 2 * D * np.tan(half_h_rad)
+    best_data["horizontal_coverage_m"] = round(horizontal_coverage,2)
     return best_data
  
 def plot_3d_beam_coverage_with_volume(H_s, H_r, D, tilt_deg, beamwidth_v_deg, beamwidth_h_deg):
