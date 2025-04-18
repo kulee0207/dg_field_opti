@@ -273,3 +273,16 @@ with row2_col2:
             st.write(f"메인 빔이 커버할 수 있는 좌우 범위 : {horizon_cov_range:.2f}m")
 
 
+with row2_col3:
+    with st.expander("커버 범위 계산"):
+        tilt = st.number_input("적용 Tilt (도) : ", key='unique_key_201')
+        distance = st.number_input("두 건물 사이의 거리(m) ", key='unique_key_202')  # 두 건물 사이의 거리 (m)
+        base_station_height = st.number_input("중계기 시설 높이(m) ", key='unique_key_203')  # 기지국이 설치된 높이 (m)
+        vertical_beamwidth = st.number_input("수직 빔폭(도) : ", key='unique_key_204')
+        horizontal_beamwidth = st.number_input("수평 빔폭(도) : ", key='unique_key_205')
+        tilt = -tilt
+        if st.button("범위 계산하기", key='unique_key_2'):
+            verti_coverage_range, horizon_coverage_range = calculate_coverage_from_tilt(distance, base_station_height, tilt, vertical_beamwidth, horizontal_beamwidth)
+# 결과 출력
+            st.write(f"메인 빔이 커버할 수 있는 높이 범위: {verti_coverage_range[0]:.2f}m ~ {verti_coverage_range[1]:.2f}m")
+            st.write(f"메인 빔이 커버할 수 있는 좌우 거리: {horizon_coverage_range:.2f}m")
