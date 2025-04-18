@@ -215,7 +215,7 @@ col1, col2 = st.columns(2)
 row2_col1, row2_col2, row2_col3 = st.columns(3)
 
 with col1:
-    st.image("images/mainbeam_calcul.JPG", caption="Main Beam 수직 커버리지 게산")
+    st.image("images/mainbeam_calcul.jpg", caption="Main Beam 수직 커버리지 게산")
 with col2:
     st.image("images/AAU_Beamshape.JPG", caption="AAU Type 별 Beam Shape")
 
