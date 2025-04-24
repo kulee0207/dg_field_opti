@@ -15,13 +15,17 @@ last_year = today.year - 1
 this_year = today.year
 jan_1 = datetime.date(last_year, 1, 1)
 dec_31 = datetime.date(this_year, 12, 31)
+initial_value = (today,today)
 
 d = st.date_input(
     "최적화 전 일자 조회 기간",
-    value=(today,today),
+    value=initial_value,
     min_value=jan_1,
     max_value=dec_31,
     format="MM.DD.YYYY",
 )
+if d == initial_value:
+    d = (None,None)
+
 dates = [date.strftime("%Y%m%d") for date in d]
 st.write(dates)
