@@ -17,10 +17,10 @@ jan_1 = datetime.date(last_year, 1, 1)
 dec_31 = datetime.date(this_year, 12, 31)
 
 d = st.date_input(
-    "Select your vacation for next year",
-    # (jan_1, datetime.date(this_year, 1, 7)),
-    jan_1,
-    dec_31,
+    "최적화 전 일자 조회 기간",
+    value=(today,today),
+    min_value=jan_1,
+    max_value=dec_31,
     format="MM.DD.YYYY",
 )
 dates = [date.strftime("%Y%m%d") for date in d]
