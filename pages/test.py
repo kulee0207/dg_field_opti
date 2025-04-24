@@ -11,9 +11,10 @@ import datetime
 
 
 today = datetime.datetime.now()
-next_year = today.year + 1
-jan_1 = datetime.date(next_year, 1, 1)
-dec_31 = datetime.date(next_year, 12, 31)
+last_year = today.year - 1
+this_year = today.year
+jan_1 = datetime.date(last_year, 1, 1)
+dec_31 = datetime.date(this_year, 12, 31)
 
 d = st.date_input(
     "Select your vacation for next year",
@@ -22,4 +23,5 @@ d = st.date_input(
     dec_31,
     format="MM.DD.YYYY",
 )
-d
+dates = [date.strftime("%Y%m%d") for date in d]
+st.write(dates)
