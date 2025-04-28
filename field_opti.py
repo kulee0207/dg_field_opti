@@ -270,12 +270,12 @@ with row2_col2:
                 H_s = base_station_height,
                 H_r = target_bld_height,
                 D = distance,
-                tilt_deg=params['best_tilt_deg'],
+                tilt_deg=params['최적 틸트 각도'],
                 beamwidth_v_deg = beamwidth_v_deg,
                 beamwidth_h_deg = beamwidth_h_deg
                 )
             display_params = params.copy()
-            display_params["best_tilt_deg"] = -display_params["best_tilt_deg"]
+            display_params["최적 틸트 각도"] = -display_params["최적 틸트 각도"]
             st.write(display_params)
             st.pyplot(fig_2d)
             st.pyplot(fig_3d)
