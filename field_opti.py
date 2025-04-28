@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import math
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
+plt.rcParams['font.family'] = 'Malgun Gothic'
+plt.rcParams['axes.unicode_minus'] = False
+
 
 
 st.set_page_config(
