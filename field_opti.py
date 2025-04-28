@@ -94,13 +94,21 @@ def compute_coverage_with_horizontal(H_s, H_r, D, beamwidth_v_deg, beamwidth_h_d
         coverages.append(coverage)
         tops.append(y_max)
         bottoms.append(y_min)
-        if coverage > best_data.get("max_v_coverage",0):
+        # if coverage > best_data.get("max_v_coverage",0):
+        #     best_data = {
+        #         "max_v_coverage" : round(coverage,2),
+        #         "best_tilt_deg" : round(tilt,0),
+        #         "coverage_top_m" : round(y_max,2),
+        #         "coverage_bottom_m" : round(y_min,2),
+        #         "main_beam_height" : round(H_s +np.tan(center_rad)*D,2),
+        #     }
+        if coverage > best_data.get("최대 수직 커버리지",0):
             best_data = {
-                "max_v_coverage" : round(coverage,2),
-                "best_tilt_deg" : round(tilt,0),
-                "coverage_top_m" : round(y_max,2),
-                "coverage_bottom_m" : round(y_min,2),
-                "main_beam_height" : round(H_s +np.tan(center_rad)*D,2),
+                "최대 수직 커버리지" : round(coverage,2),
+                "최적 틸트 각도" : round(tilt,0),
+                "커버리지 상단 높이" : round(y_max,2),
+                "커버리지 하단 높이" : round(y_min,2),
+                "Main Beam 중심 높이" : round(H_s +np.tan(center_rad)*D,2),
             }
     coverages = np.array(coverages)
     valid_idx = coverages > 0
@@ -108,11 +116,11 @@ def compute_coverage_with_horizontal(H_s, H_r, D, beamwidth_v_deg, beamwidth_h_d
     if show_plot:
         plt.figure(figsize=(10, 5))
         plt.plot(-tilt_range, coverages)
-        plt.axvline(-best_data["best_tilt_deg"], color='red', linestyle='--', label=f"Best Tilt = {-best_data['best_tilt_deg']:.0f}°")
-        plt.axhline(best_data["max_v_coverage"], color='blue', linestyle='--', label=f"Max Verticla_Coverage = {best_data['max_v_coverage']:.2f}°")
-        plt.title("Tilt Angle vs. Vertical Coverage Length")
-        plt.xlabel("Tilt Angle (°)")
-        plt.ylabel("Vertical Coverage (m)")
+        plt.axvline(-best_data["최적 틸트 각도"], color='red', linestyle='--', label=f"Best Tilt = {-best_data['최적 틸트 각도']:.0f}°")
+        plt.axhline(best_data["최대 수직 커버리지"], color='blue', linestyle='--', label=f"Max Verticla_Coverage = {best_data['최대 수직 커버리지']:.2f}°")
+        plt.title("틸트각에 따른 수직 커버리지 길이")
+        plt.xlabel("틸트 각 (°)")
+        plt.ylabel("수직 커버리지 (m)")
         plt.ylim(bottom=0)
         plt.xlim(-tilt_range_valid[0],-tilt_range_valid[-1])
         plt.grid(True)
@@ -123,13 +131,13 @@ def compute_coverage_with_horizontal(H_s, H_r, D, beamwidth_v_deg, beamwidth_h_d
         plt.close()
         half_h_rad = np.radians(beamwidth_h_deg / 2)
         horizontal_coverage = 2 * D * np.tan(half_h_rad)
-        best_data["horizontal_coverage_m"] = round(horizontal_coverage,2)
+        best_data["수평 커버리지"] = round(horizontal_coverage,2)
         return best_data, fig
 
     # 수평 커버리지 계산
     half_h_rad = np.radians(beamwidth_h_deg / 2)
     horizontal_coverage = 2 * D * np.tan(half_h_rad)
-    best_data["horizontal_coverage_m"] = round(horizontal_coverage,2)
+    best_data["수평 커버리지"] = round(horizontal_coverage,2)
     return best_data
  
 def plot_3d_beam_coverage_with_volume(H_s, H_r, D, tilt_deg, beamwidth_v_deg, beamwidth_h_deg):
@@ -228,7 +236,22 @@ with col2:
 
 
 with row2_col1:
-    with st.expander("최적 tilt 계산"):
+    with st.expander("Main Beam 틸트 및 커버리지 계산"):
+        target_height = st.number_input("Main Beam target 높이 (m) : ", key='unique_key_101')
+        distance = st.number_input("두 건물 사이의 거리(m): ", key='unique_key_102')
+        base_station_height = st.number_input("중계기 시설 높이 (m): ", key='unique_key_103')
+        vertical_beamwidth = st.number_input("수직 빔폭 (도): ", key='unique_key_104')
+        horizontal_beamwidth = st.number_input("수평 빔폭 (도): ", key='unique_key_105')
+        if st.button("틸트 계산하기", key = "unique_key_1"):
+            tilt, verti_cov_range = calculate_tilt(distance, base_station_height, target_height, vertical_beamwidth)
+            horizon_cov_range = calculate_horizontal_coverage(distance, horizontal_beamwidth, target_height, base_station_height)
+
+            st.write(f"계산된 틸트 값 : {tilt:.0f}도")
+            st.write(f"메인 빔이 커버할 수 있는 수직 범위 : {verti_cov_range[0]:.2f}m ~ {verti_cov_range[1]:.2f}m")
+            st.write(f"메인 빔이 커버할 수 있는 좌우 범위 : {horizon_cov_range:.2f}m")
+
+with row2_col2:
+    with st.expander("수직 커버리지 최대 커버리지 최적 tilt 계산"):
         target_bld_height = st.number_input("Target 서비스 건물 높이(m) : ", key='unique_key_301')
         base_station_height = st.number_input("중계기 시설 높이(m) ", key='unique_key_303')
         distance = st.number_input("두 건물 사이의 거리(m) ", key='unique_key_302')
@@ -256,22 +279,6 @@ with row2_col1:
             st.write(display_params)
             st.pyplot(fig_2d)
             st.pyplot(fig_3d)
-
-with row2_col2:
-    with st.expander("틸트 및 커버리지 계산"):
-        target_height = st.number_input("Main Beam target 높이 (m) : ", key='unique_key_101')
-        distance = st.number_input("두 건물 사이의 거리(m): ", key='unique_key_102')
-        base_station_height = st.number_input("중계기 시설 높이 (m): ", key='unique_key_103')
-        vertical_beamwidth = st.number_input("수직 빔폭 (도): ", key='unique_key_104')
-        horizontal_beamwidth = st.number_input("수평 빔폭 (도): ", key='unique_key_105')
-        if st.button("틸트 계산하기", key = "unique_key_1"):
-            tilt, verti_cov_range = calculate_tilt(distance, base_station_height, target_height, vertical_beamwidth)
-            horizon_cov_range = calculate_horizontal_coverage(distance, horizontal_beamwidth, target_height, base_station_height)
-
-            st.write(f"계산된 틸트 값 : {tilt:.0f}도")
-            st.write(f"메인 빔이 커버할 수 있는 수직 범위 : {verti_cov_range[0]:.2f}m ~ {verti_cov_range[1]:.2f}m")
-            st.write(f"메인 빔이 커버할 수 있는 좌우 범위 : {horizon_cov_range:.2f}m")
-
 
 with row2_col3:
     with st.expander("커버 범위 계산"):
