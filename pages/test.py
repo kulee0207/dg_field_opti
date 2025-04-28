@@ -27,5 +27,5 @@ d = st.date_input(
 if d == initial_value:
     d = (None,None)
 
-dates = [date.strftime("%Y%m%d") for date in d]
+dates = [for date in d]
 st.write(dates[0])
