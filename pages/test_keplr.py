@@ -2,54 +2,49 @@ import streamlit as st
 import pandas as pd
 import pydeck as pdk
 
-# ----------------------------------
-# 0. 예시 데이터 (실제에선 df 불러오면 됨)
-# ----------------------------------
-# df = pd.read_csv("your_file.csv")  # 실제 데이터
-# df에는 반드시 lat, lon 컬럼이 있어야 합니다.
-
-# 여기서는 샘플만
-import numpy as np
-n = 30000
-center_lat, center_lon = 37.5665, 126.9780  # 서울
+# 1) 위경도 데이터
 df = pd.DataFrame({
-    "lat": center_lat + (np.random.rand(n) - 0.5) * 2.0,   # 대충 한국 범위
-    "lon": center_lon + (np.random.rand(n) - 0.5) * 2.0,
-    "value": np.random.randint(0, 100, n)
+    "lat": [37.5665, 37.57],
+    "lon": [126.9780, 126.98],
 })
 
-# ----------------------------------
-# 1. 초기 뷰 (한국 중심)
-# ----------------------------------
-view_state = pdk.ViewState(
-    latitude=df["lat"].mean(),
-    longitude=df["lon"].mean(),
-    zoom=6,
-    pitch=0,
-    bearing=0,
+# 2) Kakao 또는 VWorld 타일 URL
+KAKAO_KEY = "df7524b09d181806b21d9780fd224a06"
+kakao_tile_url = f"https://dapi.kakao.com/v2/map/tile/{{z}}/{{x}}/{{y}}.png?appkey={KAKAO_KEY}"
+
+
+# 3) TileLayer: 베이스맵
+kakao_layer = pdk.Layer(
+    "TileLayer",
+    data=None,
+    min_zoom=0,
+    max_zoom=19,
+    tile_size=256,
+    get_tile_data=kakao_tile_url,  # <-- 여기만 VWorld로 바꾸면 VWorld 베이스맵
+    opacity=1.0,
 )
 
-# ----------------------------------
-# 2. ScatterplotLayer 정의
-# ----------------------------------
+# 4) 데이터 레이어 (예: Scatterplot)
 scatter_layer = pdk.Layer(
     "ScatterplotLayer",
     data=df,
-    get_position="[lon, lat]",       # lon, lat 순서
-    get_radius=200,                  # 점 반경 (m 단위 느낌)
-    get_fill_color="[255, 140, 0, 160]",  # RGBA
+    get_position="[lon, lat]",
+    get_radius=200,
+    get_fill_color="[255, 0, 0, 200]",
     pickable=True,
 )
 
-# ----------------------------------
-# 3. Deck 객체 생성 및 스트림릿 출력
-# ----------------------------------
-deck = pdk.Deck(
-    layers=[scatter_layer],
-    initial_view_state=view_state,
-    map_style="light",   # 기본 Mapbox light 스타일 (한국 모양 충분히 나옵니다)
-    tooltip={"text": "lat: {lat}\nlon: {lon}\nvalue: {value}"}
+view_state = pdk.ViewState(
+    latitude=df["lat"].mean(),
+    longitude=df["lon"].mean(),
+    zoom=12,
+    pitch=0,
 )
 
-st.title("한국 위경도 데이터 시각화 (pydeck Scatterplot)")
+deck = pdk.Deck(
+    layers=[kakao_layer, scatter_layer],
+    initial_view_state=view_state,
+    map_style=None  # <-- Mapbox 스타일 OFF, 타일만 사용
+)
+
 st.pydeck_chart(deck)
