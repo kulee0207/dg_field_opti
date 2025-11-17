@@ -4,3 +4,4 @@ numpy
 haversine
 folium
 matplotlib
+keplergl
