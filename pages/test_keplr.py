@@ -12,6 +12,12 @@ df = pd.DataFrame({
 KAKAO_KEY = "df7524b09d181806b21d9780fd224a06"
 kakao_tile_url = f"https://dapi.kakao.com/v2/map/tile/{{z}}/{{x}}/{{y}}.png?appkey={KAKAO_KEY}"
 
+# VWorld 예시 (실제 발급 키 필요)
+VWORLD_KEY = "418D6211-556F-3AA8-815D-4C39ACB3890A"
+vworld_tile_url = (
+    "http://api.vworld.kr/req/wmts/1.0.0/"
+    f"{VWORLD_KEY}/Base/{'{z}'}/{'{y}'}/{'{x}'}.png"
+)
 
 # 3) TileLayer: 베이스맵
 kakao_layer = pdk.Layer(
@@ -20,7 +26,7 @@ kakao_layer = pdk.Layer(
     min_zoom=0,
     max_zoom=19,
     tile_size=256,
-    get_tile_data=kakao_tile_url,  # <-- 여기만 VWorld로 바꾸면 VWorld 베이스맵
+    get_tile_data=vworld_tile_url,  # <-- 여기만 VWorld로 바꾸면 VWorld 베이스맵
     opacity=1.0,
 )
 
