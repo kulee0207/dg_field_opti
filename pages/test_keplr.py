@@ -1,56 +1,55 @@
 import streamlit as st
 import pandas as pd
-from haversine import haversine
-import folium as g
+import pydeck as pdk
+
+# ----------------------------------
+# 0. 예시 데이터 (실제에선 df 불러오면 됨)
+# ----------------------------------
+# df = pd.read_csv("your_file.csv")  # 실제 데이터
+# df에는 반드시 lat, lon 컬럼이 있어야 합니다.
+
+# 여기서는 샘플만
 import numpy as np
-import random
-import matplotlib.pyplot as plt
-import math
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-import datetime
-from keplergl import KeplerGl
-
-def rsr_to_color(value):
-    if value >= -80:
-        return [0, 0, 255]
-    elif value >= -90:
-        return [0,255,0]
-    elif value >= -105:
-        return [255,255,0]
-    else:
-        return [255,0,0]
-
-def create_rec(lat, lon):
-    return [
-        [lon-0.001/2, lat-0.001/2],
-        [lon-0.001/2, lat+0.001/2],
-        [lon+0.001/2, lat+0.001/2],
-        [lon+0.001/2, lat-0.001/2]
-    ]
-    
-
-
+n = 30000
+center_lat, center_lon = 37.5665, 126.9780  # 서울
 df = pd.DataFrame({
-    "lat": [37.5665, 37.5670, 37.5675],
-    "lon": [126.9780, 126.9790, 126.9800],
-    "rsrp": [-75, -88, -102],
-    "sinr": [20,15,8]
+    "lat": center_lat + (np.random.rand(n) - 0.5) * 2.0,   # 대충 한국 범위
+    "lon": center_lon + (np.random.rand(n) - 0.5) * 2.0,
+    "value": np.random.randint(0, 100, n)
 })
 
-df["color"] = df["rsrp"].apply(rsrp_to_color)
-df["polygon"] = df.apply(lambda row : create_rectangle(row["lat"], row["lon"]), axis=1)
-
-polygon_layer = pdk.Layer(
-    "PolygonLayer",
-    df,
-    get_polygon="polygon",
-    get_fill_color="color",
-    get_line_color=[0,0,0],
-    line_width_min_pixels=1,
-    pickable=True,
-    auto_highlight=True
+# ----------------------------------
+# 1. 초기 뷰 (한국 중심)
+# ----------------------------------
+view_state = pdk.ViewState(
+    latitude=df["lat"].mean(),
+    longitude=df["lon"].mean(),
+    zoom=6,
+    pitch=0,
+    bearing=0,
 )
 
-api_key = "df7524b09d181806b21d9780fd224a06"
-kakao_tile_url = f"https://dapi.kakao.com/v2/map/tile/{{z}}/{{x}}/{{y}}.png?appkey={api_key}"
+# ----------------------------------
+# 2. ScatterplotLayer 정의
+# ----------------------------------
+scatter_layer = pdk.Layer(
+    "ScatterplotLayer",
+    data=df,
+    get_position="[lon, lat]",       # lon, lat 순서
+    get_radius=200,                  # 점 반경 (m 단위 느낌)
+    get_fill_color="[255, 140, 0, 160]",  # RGBA
+    pickable=True,
+)
 
+# ----------------------------------
+# 3. Deck 객체 생성 및 스트림릿 출력
+# ----------------------------------
+deck = pdk.Deck(
+    layers=[scatter_layer],
+    initial_view_state=view_state,
+    map_style="light",   # 기본 Mapbox light 스타일 (한국 모양 충분히 나옵니다)
+    tooltip={"text": "lat: {lat}\nlon: {lon}\nvalue: {value}"}
+)
+
+st.title("한국 위경도 데이터 시각화 (pydeck Scatterplot)")
+st.pydeck_chart(deck)
