@@ -1,72 +1,88 @@
-
 import streamlit as st
 import pandas as pd
-import pydeck as pdk
-import numpy as np
+from keplergl import KeplerGl
+from streamlit_keplergl import keplergl_static
 
 st.set_page_config(layout="wide")
 
-st.title("Kakao TileLayer + ScatterplotLayer 테스트")
+st.title("Kakao Tile + kepler.gl (Streamlit) 예제")
 
-# ------------------------------
-# 1) 예시 대량 데이터 생성 (2~5만 포인트)
-# ------------------------------
-N = 20000
-center_lat, center_lon = 37.5665, 126.9780  # 서울 중심
-
-df = pd.DataFrame({
-    "lat": center_lat + (np.random.rand(N) - 0.5) * 2.0,
-    "lon": center_lon + (np.random.rand(N) - 0.5) * 2.0,
-    "value": np.random.randint(0, 100, N),
-})
-
-# ------------------------------
-# 2) Kakao XYZ Tile URL
-# ------------------------------
-KAKAO_REST_API_KEY = "df7524b09d181806b21d9780fd224a06"
-
-kakao_tile_url = (
-    f"https://dapi.kakao.com/v2/map/tile/{{z}}/{{x}}/{{y}}.png"
-    f"?appkey={KAKAO_REST_API_KEY}"
+# 샘플 데이터 (서울 시청 한 점)
+df = pd.DataFrame(
+    {
+        "lat": [37.5665],
+        "lon": [126.9780],
+        "name": ["Seoul City Hall"],
+    }
 )
 
-# ------------------------------
-# 3) pydeck TileLayer
-# ------------------------------
-kakao_layer = pdk.Layer(
-    "TileLayer",
-    data=None,
-    min_zoom=0,
-    max_zoom=18,
-    tile_size=256,
-    get_tile_data=kakao_tile_url,
-    opacity=1.0,
+# Kakao 타일을 쓰는 kepler.gl config
+# ※ url 에는 1단계에서 만든 kakao-style.json 의 주소를 넣어야 합니다.
+KEPLER_CONFIG = {
+    "version": "v1",
+    "config": {
+        "visState": {
+            "layers": [
+                {
+                    "id": "point-layer",
+                    "type": "point",
+                    "config": {
+                        "dataId": "points",
+                        "label": "Sample Points",
+                        "color": [255, 0, 0],
+                        "columns": {
+                            "lat": "lat",
+                            "lng": "lon"
+                        },
+                        "isVisible": True,
+                        "radius": 10
+                    },
+                    "visualChannels": {
+                        "colorField": None,
+                        "colorScale": "quantile",
+                        "sizeField": None,
+                        "sizeScale": "linear"
+                    }
+                }
+            ],
+            "interactionConfig": {
+                "tooltip": {
+                    "fieldsToShow": {
+                        "points": ["name", "lat", "lon"]
+                    },
+                    "enabled": True
+                }
+            }
+        },
+        "mapState": {
+            "bearing": 0,
+            "dragRotate": False,
+            "latitude": 37.5665,
+            "longitude": 126.9780,
+            "pitch": 0,
+            "zoom": 12,
+            "isSplit": False
+        },
+        "mapStyle": {
+            # 아래 styleType 은 mapStyles 목록 중 하나 id 와 맞추면 됩니다.
+            "styleType": "kakao",
+            "mapStyles": [
+                {
+                    "id": "kakao",
+                    "label": "Kakao Map",
+                    "url": "https://raw.githubusercontent.com/<YOUR_GITHUB_ID>/<REPO>/main/kakao-style.json"  # <- 수정
+                }
+            ]
+        }
+    }
+}
+
+# keplergl 객체 생성
+kepler_map = KeplerGl(
+    height=600,
+    data={"points": df},
+    config=KEPLER_CONFIG
 )
 
-# ------------------------------
-# 4) Scatterpoint 레이어
-# ------------------------------
-scatter_layer = pdk.Layer(
-    "ScatterplotLayer",
-    data=df,
-    get_position="[lon, lat]",
-    get_radius=200,               # m 단위 대략
-    get_fill_color="[255, 0, 0, 160]",
-    pickable=True,
-)
-
-view_state = pdk.ViewState(
-    latitude=df["lat"].mean(),
-    longitude=df["lon"].mean(),
-    zoom=10,
-    pitch=0,
-)
-
-deck = pdk.Deck(
-    layers=[kakao_layer, scatter_layer],
-    initial_view_state=view_state,
-    map_style=None,               # Mapbox 스타일 끔
-    tooltip={"text": "lat: {lat}\nlon: {lon}\nvalue: {value}"},
-)
-
-st.pydeck_chart(deck)
+# Streamlit 에 렌더링
+keplergl_static(kepler_map, center_map=True)
