@@ -5,3 +5,4 @@ haversine
 folium
 matplotlib
 keplergl
+streamlit_keplergl
